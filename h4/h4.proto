@@ -1,27 +1,20 @@
 ﻿syntax = "proto3";
 
-
-
-import
-    "google/protobuf/empty.proto";
-
 option go_package = "github.com/DiSysCBFA/Handind-4/h4";
 
 package h4;
 
-service H4 {
-  rpc request (request) returns (reply);
-  rpc reply (request) returns (reply);
-
+service h4 {
+  rpc Request (RequestMessage) returns (ReplyMessage);
+  rpc Reply (RequestMessage) returns (ReplyMessage);
 }
 
-
-message request {
+message RequestMessage {
   int64 id = 1;
   int64 timestamp = 2;
-
 }
-message reply {
+
+message ReplyMessage {
   int64 id = 1;
   Status status = 2;
 }
