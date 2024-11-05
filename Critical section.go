@@ -1,4 +1,4 @@
-package Handind_4
+package main
 
 import "fmt"
 
