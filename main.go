@@ -17,7 +17,7 @@ func main() {
 		return
 	}
 
-	peerNode := peer.NewPeer(0, "")
+	//peerNode := peer.NewPeer(0, "")
 
 	//peerNode := peer.NewPeer(0, 0)
 
