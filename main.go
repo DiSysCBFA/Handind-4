@@ -4,6 +4,9 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"strings"
+
+	"github.com/DiSysCBFA/Handind-4/peer"
 )
 
 func main() {
@@ -13,17 +16,26 @@ func main() {
 		return
 	}
 
+	peerNode := peer.Peer{}
+
 	var NodeID int = 0
 
 	r := bufio.NewReader(file)
 	for {
-		line, err := r.ReadString('\n') //! Make sure last line has a new line
+		port, err := r.ReadString('\n') //! Make sure last line has a new line
 		if err != nil {
 			break
 		}
-		log.Println(line) //TODO:  to be replaced with node attempt setup
+
+		port = strings.TrimSpace(port)
+		log.Println(port) //TODO:  to be replaced with node attempt setup
 
 		NodeID++
+
+		err = peerNode.SetupNode(port)
+		if err == nil {
+			break
+		}
 
 		// TODO: Implement node setup on port.
 	}
