@@ -13,13 +13,19 @@ func main() {
 		return
 	}
 
+	var NodeID int = 0
+
 	r := bufio.NewReader(file)
 	for {
 		line, err := r.ReadString('\n')
 		if err != nil {
 			break
 		}
-		log.Println(line)
+		log.Println(line) // to be replaced with node attempt setup
+
+		NodeID++
+
+		//TODO: Implement node setup on port.
 	}
 
 	defer file.Close()
