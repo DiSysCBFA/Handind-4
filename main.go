@@ -17,7 +17,7 @@ func main() {
 
 	r := bufio.NewReader(file)
 	for {
-		line, err := r.ReadString('\n')
+		line, err := r.ReadString('\n') // Make sure last line has a new line
 		if err != nil {
 			break
 		}
