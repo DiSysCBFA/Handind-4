@@ -30,6 +30,9 @@ func main() {
 		NodeID++
 
 		err = peerNode.SetupNode(port)
+		if err == nil {
+			break
+		}
 
 		// TODO: Implement node setup on port.
 	}
