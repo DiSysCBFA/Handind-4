@@ -1,5 +1,9 @@
 # Handin-4
 
+## Contents
+
+- [Contents](#Contents)
+- [Setup](#Setup)
 
 ## Setup
 
