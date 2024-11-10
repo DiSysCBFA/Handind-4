@@ -35,9 +35,8 @@ func main() {
 		peerNode := peer.NewPeer(NodeID, port)
 
 		err = peerNode.SetupNode()
-		log.Println("Node setup on port: ", port)
-		if err == nil {
 
+		if err == nil {
 			break
 		}
 
@@ -55,6 +54,7 @@ func main() {
 	}
 
 	if result == "Request" {
+		log.Println("Requesting access to critical section")
 		//peerNode.Request()
 	} else {
 		os.Exit(0)
