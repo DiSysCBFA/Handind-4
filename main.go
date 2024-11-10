@@ -30,7 +30,8 @@ func main() {
 		port = strings.TrimSpace(port)
 		log.Println(port) //TODO:  to be replaced with node attempt setup
 
-		NodeID++
+		NodeID += 1
+		peerNode.NodeID = NodeID
 
 		err = peerNode.SetupNode(port)
 		if err == nil {
