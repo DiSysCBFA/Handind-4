@@ -2,12 +2,14 @@ package peer
 
 import (
 	"fmt"
+	"log"
+	"net"
+	"time"
+
 	critical "github.com/DiSysCBFA/Handind-4/Critical-section"
 	"github.com/DiSysCBFA/Handind-4/h4"
 	"google.golang.org/grpc"
 	_ "google.golang.org/grpc/status"
-	"log"
-	"time"
 )
 
 type Peer struct {
@@ -32,19 +34,19 @@ func NewPeer(id int, port int) *Peer {
 func (p *Peer) multicast() {
 	req := h4.RequestMessage{Id: int64(p.id), Timestamp: time.Now().UnixNano()}
 	for _, port := range ports {
-		conn, err := grpc.Dial(fmt.Sprintf("localhost:%d", peer.port), grpc.WithInsecure())
+		conn, err := grpc.Dial(fmt.Sprintf("localhost:%d", p.port), grpc.WithInsecure())
 		if err != nil {
 			log.Println(err)
 			continue
-
+		}
 	}
-
+}
 
 func (p *Peer) access() {
 	if p.status == h4.Status_GRANTED {
 		critical.Main()
 	}
-
+}
 
 func (p *Peer) SetupNode(port string) error {
 	log.Println("Setting up node on port:", port)
