@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/DiSysCBFA/Handind-4/peer"
 )
@@ -25,6 +26,8 @@ func main() {
 		if err != nil {
 			break
 		}
+
+		port = strings.TrimSpace(port)
 		log.Println(port) //TODO:  to be replaced with node attempt setup
 
 		NodeID++
