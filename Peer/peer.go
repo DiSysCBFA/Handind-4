@@ -14,7 +14,7 @@ type Peer struct {
 	Port   string
 }
 
-func (p *Peer) setupNode(port string) error {
+func (p *Peer) SetupNode(port string) error {
 	log.Println("Setting up node on port:", port)
 
 	listener, err := net.Listen("tcp", port)
