@@ -2,6 +2,6 @@ package critical
 
 import "fmt"
 
-func main() {
+func Main() {
 	fmt.Println("Critical section has been accessed")
 }
