@@ -17,6 +17,8 @@ func main() {
 		return
 	}
 
+	peerNode := peer.NewPeer(0, "")
+
 	//peerNode := peer.NewPeer(0, 0)
 
 	var NodeID int = 0
@@ -55,7 +57,7 @@ func main() {
 
 	if result == "Request" {
 		log.Println("Requesting access to critical section")
-		//peerNode.Request()
+		//peerNode.multicast([]int{4000, 4001, 4002})
 	} else {
 		os.Exit(0)
 	}

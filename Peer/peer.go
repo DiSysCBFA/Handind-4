@@ -71,7 +71,7 @@ func (p *Peer) SetupNode() error {
 	log.Printf("Node %d starting gRPC server on %s", p.Id, p.port)
 	log.Println("Node setup on port: ", 4)
 
-	go func() {
+	go func() {Peer/peer.go
 		if err := p.grpcServer.Serve(listener); err != nil {
 			log.Printf("Failed to serve gRPC server on %s: %v", p.port, err)
 		}
