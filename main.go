@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/DiSysCBFA/Handind-4/peer"
+	"github.com/manifoldco/promptui"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
 		return
 	}
 
-	peerNode := peer.Peer{}
+	//peerNode := peer.NewPeer(0, 0)
 
 	var NodeID int = 0
 
@@ -31,15 +32,34 @@ func main() {
 		log.Println(port) //TODO:  to be replaced with node attempt setup
 
 		NodeID += 1
-		peerNode.NodeID = NodeID
+		peerNode := peer.NewPeer(NodeID, port)
 
-		err = peerNode.SetupNode(port)
+		err = peerNode.SetupNode()
+		log.Println("Node setup on port: ", port)
 		if err == nil {
+
 			break
 		}
 
 		// TODO: Implement node setup on port.
 	}
 
+	selection := promptui.Select{
+		Label: "Select action",
+		Items: []string{"Request", "Exit"},
+	}
+
+	_, result, err := selection.Run()
+	if err != nil {
+		log.Fatalf("Failed to run: %v", err)
+	}
+
+	if result == "Request" {
+		//peerNode.Request()
+	} else {
+		os.Exit(0)
+	}
+
 	defer file.Close()
+
 }
