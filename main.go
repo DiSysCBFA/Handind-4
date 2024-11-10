@@ -17,15 +17,15 @@ func main() {
 
 	r := bufio.NewReader(file)
 	for {
-		line, err := r.ReadString('\n') // Make sure last line has a new line
+		line, err := r.ReadString('\n') //! Make sure last line has a new line
 		if err != nil {
 			break
 		}
-		log.Println(line) // to be replaced with node attempt setup
+		log.Println(line) //TODO:  to be replaced with node attempt setup
 
 		NodeID++
 
-		//TODO: Implement node setup on port.
+		// TODO: Implement node setup on port.
 	}
 
 	defer file.Close()
