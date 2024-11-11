@@ -19,7 +19,9 @@ Download the zip file.
 Ensure you have go downloaded.
 
 Navigate into the folder, and run the following: 
-$$ go \:\: run \:\:  . $$
+``` bash 
+go run . $$ 
+```
 
 After this it will display that you are joining on a specific port with a certain node id and at as certain timestamp.
 
