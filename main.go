@@ -47,6 +47,10 @@ func main() {
 		log.Fatal("No peer node was initialized")
 		return
 	}
+	go func() {
+		log.Printf("Node %d is running and ready to handle requests", NodeID)
+		select {} // Keeps this goroutine running indefinitely
+	}()
 
 	selection := promptui.Select{
 		Label: "Select action",
@@ -66,4 +70,5 @@ func main() {
 	}
 
 	defer file.Close()
+	select {}
 }

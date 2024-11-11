@@ -89,3 +89,12 @@ func (p *Peer) Request(ctx context.Context, req *h4.RequestMessage) (*h4.ReplyMe
 	}
 	return response, nil
 }
+
+func (p *Peer) Reply(ctx context.Context, req *h4.RequestMessage) (*h4.ReplyMessage, error) {
+
+	// Placeholder response (adjust as needed for your application logic)
+	response := &h4.ReplyMessage{
+		Status: h4.Status_GRANTED, // or DENIED based on your logic
+	}
+	return response, nil
+}
