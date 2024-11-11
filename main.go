@@ -32,7 +32,7 @@ func main() {
 		log.Println(port) // Displaying each port read
 
 		NodeID += 1
-		peerNode = peer.NewPeer(NodeID, port) // Assign to the outer peerNode
+		peerNode = peer.NewPeer(NodeID, port, 3) // Assign to the outer peerNode
 
 		err = peerNode.SetupNode()
 
@@ -47,10 +47,6 @@ func main() {
 		log.Fatal("No peer node was initialized")
 		return
 	}
-	go func() {
-		log.Printf("Node %d is running and ready to handle requests", NodeID)
-		select {} // Keeps this goroutine running indefinitely
-	}()
 
 	selection := promptui.Select{
 		Label: "Select action",
@@ -70,5 +66,4 @@ func main() {
 	}
 
 	defer file.Close()
-	select {}
 }
