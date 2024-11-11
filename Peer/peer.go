@@ -76,17 +76,18 @@ func (p *Peer) SetupNode() error {
 		}
 	}()
 
+	p.CreateNodeServer()
+
 	return nil
 }
 
 // CreateNodeServer initializes a gRPC server and registers the Peer as the service handler
-func CreateNodeServer(nodeID int, port string) (*grpc.Server, error) {
-	peerServer := NewPeer(nodeID, port)
+func (p *Peer) CreateNodeServer() (*grpc.Server, error) {
 	grpcServer := grpc.NewServer()
 
-	h4.RegisterH4Server(grpcServer, peerServer)
+	h4.RegisterH4Server(grpcServer, p)
 
-	log.Printf("Created gRPC server for node ID: %d on port %s", nodeID, port)
+	log.Printf("Created gRPC server for node ID: %d on port %s", p.Id, p.port)
 
 	return grpcServer, nil
 }
