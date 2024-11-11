@@ -2,7 +2,6 @@ package peer
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 	"time"
@@ -36,10 +35,9 @@ func (p *Peer) Multicast(ports []string) {
 	req := h4.RequestMessage{Id: int64(p.Id), Timestamp: time.Now().UnixNano()}
 	for _, port := range ports {
 		if port != p.port {
-			address := fmt.Sprintf("localhost:%d", port)
-			conn, err := grpc.Dial(address, grpc.WithInsecure())
+			conn, err := grpc.Dial(port, grpc.WithInsecure())
 			if err != nil {
-				log.Printf("Failed to connect to %s: %v", address, err)
+				log.Printf("Failed to connect to %s: %v", port, err)
 				continue
 			}
 			defer conn.Close()
@@ -47,9 +45,9 @@ func (p *Peer) Multicast(ports []string) {
 			client := h4.NewH4Client(conn)
 			_, err = client.Request(context.Background(), &req)
 			if err != nil {
-				log.Printf("Error sending request to %s: %v", address, err)
+				log.Printf("Error sending request to %s: %v", port, err)
 			} else {
-				log.Printf("Request sent to peer on %s", address)
+				log.Printf("Request sent to peer on %s", port)
 			}
 		}
 	}
