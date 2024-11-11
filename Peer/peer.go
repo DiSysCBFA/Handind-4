@@ -8,10 +8,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/DiSysCBFA/Handind-4/h4"
+	h4 "github.com/DiSysCBFA/Handind-4/h4"
 	"google.golang.org/grpc"
 )
 
+// Peer represents a single peer in the network
 type Peer struct {
 	h4.UnimplementedH4Server
 	Id                  int
@@ -21,9 +22,10 @@ type Peer struct {
 	isInCriticalSection bool
 	grantCount          int
 	totalPeers          int
-	mu                  sync.Mutex // Mutex to protect concurrent access to critical section
+	mu                  sync.Mutex
 }
 
+// NewPeer creates a new Peer instance
 func NewPeer(id int, port string, totalPeers int) *Peer {
 	peer := &Peer{
 		Id:                  id,
@@ -33,7 +35,7 @@ func NewPeer(id int, port string, totalPeers int) *Peer {
 		isInCriticalSection: false,
 		totalPeers:          totalPeers,
 	}
-	h4.RegisterH4Server(peer.grpcServer, peer) // Register the peer as the service handler
+	h4.RegisterH4Server(peer.grpcServer, peer)
 	return peer
 }
 
@@ -67,9 +69,6 @@ func (p *Peer) Multicast(ports []string) {
 
 // Request handles incoming access requests from other nodes
 func (p *Peer) Request(ctx context.Context, req *h4.RequestMessage) (*h4.ReplyMessage, error) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
 	log.Printf("Received request from peer %d with timestamp %d", req.Id, req.Timestamp)
 
 	// Decide whether to grant or deny access based on current state
@@ -78,43 +77,22 @@ func (p *Peer) Request(ctx context.Context, req *h4.RequestMessage) (*h4.ReplyMe
 		responseStatus = h4.Status_DENIED
 	}
 
-	// Prepare the Reply as a new RequestMessage (as per your requirement)
-	reply := &h4.RequestMessage{
-		Id:        int64(p.Id),
-		Timestamp: time.Now().UnixNano(),
-	}
+	// Prepare the reply message
+	reply := &h4.ReplyMessage{Id: int64(p.Id), Status: responseStatus}
+	log.Printf("Sending reply to peer %d with status %v", req.Id, responseStatus)
 
-	// Send the reply back to the requester
-	err := p.SendReply(req.Id, reply, responseStatus)
-	if err != nil {
-		log.Printf("Failed to reply to peer %d: %v", req.Id, err)
-		return nil, err
-	}
-
-	log.Printf("Reply sent to peer %d with status %v", req.Id, responseStatus)
-	return &h4.ReplyMessage{Id: int64(p.Id), Status: responseStatus}, nil
+	return reply, nil
 }
 
-// Reply handles incoming replies (in the form of RequestMessage) to previous requests
+// Reply handles incoming replies to previous requests
 func (p *Peer) Reply(ctx context.Context, req *h4.RequestMessage) (*h4.ReplyMessage, error) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-
 	log.Printf("Received reply from peer %d", req.Id)
 
-	// Simulate that this reply message is either GRANTED or DENIED by using internal logic.
-	// We assume that if we have a majority, we consider it as granted.
+	// Temporarily bypass grantCount logic for testing
 	if p.status == h4.Status_GRANTED {
-		p.grantCount++
+		log.Printf("Grant acknowledged from peer %d", req.Id)
 	}
 
-	// Check if a majority of grants are received, allowing entry to critical section
-	if p.grantCount >= (p.totalPeers/2)+1 {
-		p.status = h4.Status_GRANTED
-		log.Printf("Peer %d has majority grants and can enter critical section", p.Id)
-	}
-
-	// Placeholder response (acknowledgement for the protocol)
 	return &h4.ReplyMessage{Id: int64(p.Id), Status: h4.Status_GRANTED}, nil
 }
 
@@ -167,7 +145,7 @@ func (p *Peer) Access() {
 func (p *Peer) SetupNode() error {
 	listener, err := net.Listen("tcp", p.port)
 	if err != nil {
-		log.Fatalf("Failed to listen on %s: %v", p.port, err)
+		log.Printf("Failed to listen on %s: %v", p.port, err)
 		return err
 	}
 

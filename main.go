@@ -66,4 +66,5 @@ func main() {
 	}
 
 	defer file.Close()
+	select {}
 }
