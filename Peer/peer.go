@@ -30,7 +30,8 @@ func NewPeer(id int, port string) *Peer {
 	return peer
 }
 
-// multicast sends a request message to all specified peer ports
+// Multicast sends a request message to all specified peer ports
+// Multicast sends a request message to all specified peer ports
 func (p *Peer) Multicast(ports []string) {
 	req := h4.RequestMessage{Id: int64(p.Id), Timestamp: time.Now().UnixNano()}
 	for _, port := range ports {
@@ -43,6 +44,7 @@ func (p *Peer) Multicast(ports []string) {
 			defer conn.Close()
 
 			client := h4.NewH4Client(conn)
+			// Send the request
 			_, err = client.Request(context.Background(), &req)
 			if err != nil {
 				log.Printf("Error sending request to %s: %v", port, err)
@@ -51,12 +53,21 @@ func (p *Peer) Multicast(ports []string) {
 			}
 		}
 	}
+
+	// Log the current status of the peer
+	log.Printf("Peer %d status: %v", p.Id, p.status)
+
+	// Try to access the critical section if the status is granted
+	p.access()
 }
 
 // access attempts to enter the critical section if the status is GRANTED
+// access attempts to enter the critical section if the status is GRANTED
 func (p *Peer) access() {
 	if p.status == h4.Status_GRANTED {
-		critical.Main()
+		critical.Main() // Enter critical section
+	} else {
+		log.Printf("Peer %d not granted access. Current status: %v", p.Id, p.status)
 	}
 }
 
@@ -83,9 +94,22 @@ func (p *Peer) Request(ctx context.Context, req *h4.RequestMessage) (*h4.ReplyMe
 	// Log the received request for debugging
 	log.Printf("Received request from peer %d with timestamp %d", req.Id, req.Timestamp)
 
-	// Placeholder response (adjust as needed for your application logic)
+	// Use timestamp to decide whether to grant access
+	// You can further refine this logic, for example, by adding priority if necessary
+	if p.status == h4.Status_DENIED || req.Timestamp < time.Now().UnixNano() {
+		// Grant access only if the timestamp is earlier or the peer is in DENIED status
+		p.status = h4.Status_GRANTED
+		log.Printf("Granting access to peer %d", req.Id)
+	} else {
+		log.Printf("Denying access to peer %d", req.Id)
+	}
+
+	// Call access() to try entering the critical section
+	p.access()
+
+	// Respond with the current status of the peer (granted or denied)
 	response := &h4.ReplyMessage{
-		Status: h4.Status_GRANTED, // or DENIED based on your logic
+		Status: p.status, // Send back the current status
 	}
 	return response, nil
 }

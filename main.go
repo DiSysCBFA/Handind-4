@@ -29,7 +29,7 @@ func main() {
 		}
 
 		port = strings.TrimSpace(port)
-		log.Println(port) // Displaying each port read
+		log.Println("Initializing peer with port:", port) // Log port initialization
 
 		NodeID += 1
 		peerNode = peer.NewPeer(NodeID, port) // Assign to the outer peerNode
@@ -37,10 +37,11 @@ func main() {
 		err = peerNode.SetupNode()
 
 		if err == nil {
+			log.Printf("Node %d setup successfully on port %s", NodeID, port)
 			break
+		} else {
+			log.Printf("Failed to set up node on port %s", port)
 		}
-
-		// Node setup on port completed successfully
 	}
 
 	if peerNode == nil {
