@@ -80,7 +80,6 @@ func (p *Peer) Request(ctx context.Context, req *h4.RequestMessage) (*h4.ReplyMe
 	// Prepare the reply message
 	reply := &h4.ReplyMessage{Id: int64(p.Id), Status: responseStatus}
 	log.Printf("Sending reply to peer %d with status %v", req.Id, responseStatus)
-
 	return reply, nil
 }
 
