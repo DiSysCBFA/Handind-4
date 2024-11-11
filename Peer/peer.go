@@ -16,18 +16,18 @@ type Peer struct {
 	Id         int
 	port       string
 	status     h4.Status
-	requests   chan h4.RequestMessage
 	grpcServer *grpc.Server
 }
 
 func NewPeer(id int, port string) *Peer {
-	return &Peer{
+	peer := &Peer{
 		Id:         id,
 		port:       port,
 		status:     h4.Status_DENIED,
-		requests:   make(chan h4.RequestMessage),
 		grpcServer: grpc.NewServer(),
 	}
+	h4.RegisterH4Server(peer.grpcServer, peer) // Register the peer as the service handler
+	return peer
 }
 
 // multicast sends a request message to all specified peer ports
@@ -76,18 +76,5 @@ func (p *Peer) SetupNode() error {
 		}
 	}()
 
-	p.CreateNodeServer()
-
 	return nil
-}
-
-// CreateNodeServer initializes a gRPC server and registers the Peer as the service handler
-func (p *Peer) CreateNodeServer() (*grpc.Server, error) {
-	grpcServer := grpc.NewServer()
-
-	h4.RegisterH4Server(grpcServer, p)
-
-	log.Printf("Created gRPC server for node ID: %d on port %s", p.Id, p.port)
-
-	return grpcServer, nil
 }

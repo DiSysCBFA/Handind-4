@@ -17,7 +17,7 @@ func main() {
 		return
 	}
 
-	peerNode := peer.NewPeer(0, "")
+	var peerNode *peer.Peer // Declare as a pointer
 
 	var NodeID int = 0
 
@@ -29,10 +29,10 @@ func main() {
 		}
 
 		port = strings.TrimSpace(port)
-		log.Println(port) //TODO:  to be replaced with node attempt setup
+		log.Println(port) // Displaying each port read
 
 		NodeID += 1
-		peerNode := peer.NewPeer(NodeID, port)
+		peerNode = peer.NewPeer(NodeID, port) // Assign to the outer peerNode
 
 		err = peerNode.SetupNode()
 
@@ -40,7 +40,12 @@ func main() {
 			break
 		}
 
-		// TODO: Implement node setup on port.
+		// Node setup on port completed successfully
+	}
+
+	if peerNode == nil {
+		log.Fatal("No peer node was initialized")
+		return
 	}
 
 	selection := promptui.Select{
@@ -61,5 +66,4 @@ func main() {
 	}
 
 	defer file.Close()
-
 }
