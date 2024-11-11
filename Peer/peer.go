@@ -78,3 +78,14 @@ func (p *Peer) SetupNode() error {
 
 	return nil
 }
+
+func (p *Peer) Request(ctx context.Context, req *h4.RequestMessage) (*h4.ReplyMessage, error) {
+	// Log the received request for debugging
+	log.Printf("Received request from peer %d with timestamp %d", req.Id, req.Timestamp)
+
+	// Placeholder response (adjust as needed for your application logic)
+	response := &h4.ReplyMessage{
+		Status: h4.Status_GRANTED, // or DENIED based on your logic
+	}
+	return response, nil
+}
