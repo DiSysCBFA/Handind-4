@@ -7,8 +7,8 @@ import (
 	"net"
 	"time"
 
-	critical "github.com/DiSysCBFA/Handind-4/Critical-Section"
-	h4 "github.com/DiSysCBFA/Handind-4/H4"
+	critical "github.com/DiSysCBFA/Handind-4/critical"
+	h4 "github.com/DiSysCBFA/Handind-4/h4"
 	"google.golang.org/grpc"
 )
 
@@ -32,23 +32,25 @@ func NewPeer(id int, port string) *Peer {
 }
 
 // multicast sends a request message to all specified peer ports
-func (p *Peer) multicast(ports []int) {
+func (p *Peer) Multicast(ports []string) {
 	req := h4.RequestMessage{Id: int64(p.Id), Timestamp: time.Now().UnixNano()}
 	for _, port := range ports {
-		address := fmt.Sprintf("localhost:%d", port)
-		conn, err := grpc.Dial(address, grpc.WithInsecure())
-		if err != nil {
-			log.Printf("Failed to connect to %s: %v", address, err)
-			continue
-		}
-		defer conn.Close()
+		if port != p.port {
+			address := fmt.Sprintf("localhost:%d", port)
+			conn, err := grpc.Dial(address, grpc.WithInsecure())
+			if err != nil {
+				log.Printf("Failed to connect to %s: %v", address, err)
+				continue
+			}
+			defer conn.Close()
 
-		client := h4.NewH4Client(conn)
-		_, err = client.Request(context.Background(), &req)
-		if err != nil {
-			log.Printf("Error sending request to %s: %v", address, err)
-		} else {
-			log.Printf("Request sent to peer on %s", address)
+			client := h4.NewH4Client(conn)
+			_, err = client.Request(context.Background(), &req)
+			if err != nil {
+				log.Printf("Error sending request to %s: %v", address, err)
+			} else {
+				log.Printf("Request sent to peer on %s", address)
+			}
 		}
 	}
 }
@@ -69,9 +71,8 @@ func (p *Peer) SetupNode() error {
 	}
 
 	log.Printf("Node %d starting gRPC server on %s", p.Id, p.port)
-	log.Println("Node setup on port: ", 4)
 
-	go func() {Peer/peer.go
+	go func() {
 		if err := p.grpcServer.Serve(listener); err != nil {
 			log.Printf("Failed to serve gRPC server on %s: %v", p.port, err)
 		}
@@ -87,7 +88,7 @@ func CreateNodeServer(nodeID int, port string) (*grpc.Server, error) {
 
 	h4.RegisterH4Server(grpcServer, peerServer)
 
-	log.Printf("Created gRPC server for node ID: %d on port %d", nodeID, port)
+	log.Printf("Created gRPC server for node ID: %d on port %s", nodeID, port)
 
 	return grpcServer, nil
 }
