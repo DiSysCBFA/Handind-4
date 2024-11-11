@@ -21,8 +21,19 @@ Ensure you have go downloaded.
 Navigate into the folder, and run the following: 
 $$ go \:\: run \:\:  . $$
 
+After this it will display that you are joining on a specific port with a certain node id and at as certain timestamp.
+
 You will then be showed the following prompt:
 ``` bash
-
+ Select action: 
+  ▸ Request
+    Exit
 ```
+Here you can use your arrow keys and enter to confirm selection.
+
+It will then show on all others if you select Request.
+
+
+
+
 
