@@ -5,21 +5,12 @@ option go_package = "github.com/DiSysCBFA/Handind-4/h4";
 package h4;
 
 service h4 {
-  rpc Request (RequestMessage) returns (ReplyMessage);
-  rpc Reply (RequestMessage) returns (ReplyMessage);
+  rpc SendMessage (Message) returns (Message);
+
 }
 
-message RequestMessage {
+message Message {
   int64 id = 1;
   int64 timestamp = 2;
 }
 
-message ReplyMessage {
-  int64 id = 1;
-  Status status = 2;
-}
-
-enum Status {
-  GRANTED = 0;
-  DENIED = 1;
-}
