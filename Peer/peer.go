@@ -15,11 +15,12 @@ import (
 type Peer struct {
 	h4.UnimplementedH4Server
 	h4.H4Client
-	Id         int
-	port       string
-	requested  bool
-	grpcServer *grpc.Server
-	mu         sync.Mutex
+	Id           int
+	port         string
+	requested    bool
+	Reqtimestamp int64
+	grpcServer   *grpc.Server
+	mu           sync.Mutex
 }
 
 // NewPeer creates a new Peer instance
@@ -36,11 +37,12 @@ func NewPeer(id int, port string, totalPeers int) *Peer {
 
 // Multicast sends a request message to all specified peer ports
 func (p *Peer) Multicast(ports []string) {
+	p.Reqtimestamp = time.Now().UnixNano()
+	p.requested = true
 	req := &h4.Message{
-		Timestamp: time.Now().UnixNano(),
+		Timestamp: p.Reqtimestamp,
 		Answer:    0,
 	}
-	p.requested = true
 	for _, port := range ports {
 		if port != p.port {
 			go func(port string) {
@@ -68,12 +70,28 @@ func (p *Peer) logic() {
 	// Logic for the peer
 
 }
-func (p *Peer) SendMessage(context.Context, *h4.Message) (*h4.Message, error) {
-	message, err := p.SendMessage(context.Background(), &h4.Message{})
-	if err != nil {
-		return nil, err
+func (p *Peer) SendMessage(ctx context.Context, req *h4.Message) (*h4.Message, error) {
+	resp := &h4.Message{}
+	log.Println("Received request with timestamp: ", req.Timestamp)
+	if !p.requested {
+		resp = &h4.Message{
+			Answer: 1,
+		}
+		log.Println(resp)
+	} else {
+		if p.Reqtimestamp > req.Timestamp {
+			resp = &h4.Message{
+				Answer: 1,
+			}
+			log.Println(resp)
+		} else {
+			resp = &h4.Message{
+				Answer: 2,
+			}
+			log.Println(resp)
+		}
 	}
-	return message, nil
+	return resp, nil
 }
 
 // SetupNode sets up and starts the gRPC server for the peer
