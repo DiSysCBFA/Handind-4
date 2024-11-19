@@ -14,6 +14,7 @@ import (
 // Peer represents a single peer in the network
 type Peer struct {
 	h4.UnimplementedH4Server
+	h4.H4Client
 	Id         int
 	port       string
 	requested  bool
@@ -36,8 +37,8 @@ func NewPeer(id int, port string, totalPeers int) *Peer {
 // Multicast sends a request message to all specified peer ports
 func (p *Peer) Multicast(ports []string) {
 	req := &h4.Message{
-		Id:        int64(p.Id),
 		Timestamp: time.Now().UnixNano(),
+		Answer:    0,
 	}
 	p.requested = true
 	for _, port := range ports {
@@ -61,6 +62,18 @@ func (p *Peer) Multicast(ports []string) {
 			}(port)
 		}
 	}
+}
+
+func (p *Peer) logic() {
+	// Logic for the peer
+
+}
+func (p *Peer) SendMessage(context.Context, *h4.Message) (*h4.Message, error) {
+	message, err := p.SendMessage(context.Background(), &h4.Message{})
+	if err != nil {
+		return nil, err
+	}
+	return message, nil
 }
 
 // SetupNode sets up and starts the gRPC server for the peer
