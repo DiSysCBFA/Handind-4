@@ -35,9 +35,14 @@ func NewPeer(id int, port string, totalPeers int) *Peer {
 	return peer
 }
 
+// Request ensures that timestamp remains the same throughout the request
+func (p *Peer) Request(ports []string) {
+	p.Reqtimestamp = time.Now().UnixNano()
+	p.Multicast(ports)
+}
+
 // Multicast sends a request message to all specified peer ports
 func (p *Peer) Multicast(ports []string) {
-	p.Reqtimestamp = time.Now().UnixNano()
 	p.requested = true
 	req := &h4.Message{
 		Timestamp: p.Reqtimestamp,
@@ -86,11 +91,11 @@ func (p *Peer) Multicast(ports []string) {
 		}
 
 		if receivedTwos {
-			log.Println("Received at least one 2, waiting 5 seconds and retrying...")
+			log.Println("Received at least one 2(no), waiting 5 seconds and retrying...")
 			time.Sleep(5 * time.Second)
 			p.Multicast(ports)
 		} else if responses == len(ports)-1 {
-			log.Println("Received only 1's, calling function x...")
+			log.Println("Received only 1's(yes), accesing critical section")
 			critical.Main()
 			p.requested = false
 		}

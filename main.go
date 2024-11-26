@@ -70,7 +70,7 @@ func main() {
 
 	if result == "Request" {
 		log.Println("Requesting access to critical section")
-		peerNode.Multicast([]string{"localhost:4000", "localhost:4001", "localhost:4002"})
+		peerNode.Request([]string{"localhost:4000", "localhost:4001", "localhost:4002"})
 	} else {
 		os.Exit(0)
 	}
