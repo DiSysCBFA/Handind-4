@@ -25,7 +25,7 @@ func Main() {
 	if result == "Yes" {
 		log.Println("Exiting the program")
 		os.Exit(0)
-	} else {
+	} else if result == "No" {
 		fmt.Println("Continuing the program")
 	}
 }
