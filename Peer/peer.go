@@ -2,13 +2,13 @@ package peer
 
 import (
 	"context"
+	critical "github.com/DiSysCBFA/Handind-4/Critical"
+	h4 "github.com/DiSysCBFA/Handind-4/h4"
+	"google.golang.org/grpc"
 	"log"
 	"net"
 	"sync"
 	"time"
-
-	h4 "github.com/DiSysCBFA/Handind-4/h4"
-	"google.golang.org/grpc"
 )
 
 // Peer represents a single peer in the network
@@ -43,6 +43,8 @@ func (p *Peer) Multicast(ports []string) {
 		Timestamp: p.Reqtimestamp,
 		Answer:    0,
 	}
+
+	respChan := make(chan int32, len(ports))
 	for _, port := range ports {
 		if port != p.port {
 			go func(port string) {
@@ -54,22 +56,47 @@ func (p *Peer) Multicast(ports []string) {
 				defer conn.Close()
 
 				client := h4.NewH4Client(conn)
-				_, err = client.SendMessage(context.Background(), req)
+				resp, err := client.SendMessage(context.Background(), req)
 				if err != nil {
 					log.Printf("Error sending request to %s: %v", port, err)
 				} else {
 					log.Printf("Request sent to peer on %s", port)
+					respChan <- resp.Answer
 				}
-
 			}(port)
 		}
 	}
+
+	// logic for the response
+	go func() {
+		var receivedTwos bool
+		responses := 0
+
+		for range ports {
+			select {
+			case answer := <-respChan:
+				responses++
+				if answer == 2 {
+					receivedTwos = true
+				}
+			case <-time.After(3 * time.Second): //  To avoid timeout
+				log.Println("Timeout waiting for responses")
+				break
+			}
+		}
+
+		if receivedTwos {
+			log.Println("Received at least one 2, waiting 5 seconds and retrying...")
+			time.Sleep(5 * time.Second)
+			p.Multicast(ports)
+		} else if responses == len(ports)-1 {
+			log.Println("Received only 1's, calling function x...")
+			critical.Main()
+			p.requested = false
+		}
+	}()
 }
 
-func (p *Peer) logic() {
-	// Logic for the peer
-
-}
 func (p *Peer) SendMessage(ctx context.Context, req *h4.Message) (*h4.Message, error) {
 	resp := &h4.Message{}
 	log.Println("Received request with timestamp: ", req.Timestamp)
