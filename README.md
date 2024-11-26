@@ -35,6 +35,16 @@ Here you can use your arrow keys and enter to confirm selection.
 
 It will then show on all others if you select Request.
 
+When you have acessed the Critacal Secetion,
+You will then be showed the following prompt:
+``` bash
+ Do you want to quit?: 
+  ▸ Yes
+    No
+```
+Selecting "No": The program releases the Critical Section, allowing other peers to access it, and the system continues running normally.
+
+Selecting "Yes": The connection is terminated, and the system stops.
 
 
 
